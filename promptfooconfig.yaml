@@ -1,0 +1,25 @@
+description: Promptfoo eval for concise transcript sidebar titles
+prompts:
+  - file://prompts/recording-title.prompt.md
+providers:
+  - id: openai:gpt-4.1-mini
+    config:
+      temperature: 0.2
+tests:
+  - description: Ukrainian counting sample stays short and quote-free
+    vars:
+      transcript: "Раз, два, три, вісім, п'ять, вісім."
+    assert:
+      - type: javascript
+        value: |
+          return output.length <= 48 && !output.includes('"') && !output.endsWith('.');
+  - description: Stripe-focused transcript is clearly labeled
+    vars:
+      transcript: "Need to finish the Stripe webhook flow and verify the billing success redirect before Friday."
+    assert:
+      - type: llm-rubric
+        value: Mentions Stripe or billing and reads like a short sidebar title rather than a sentence.
+        threshold: 0.8
+      - type: javascript
+        value: |
+          return output.trim().split(/\s+/).length <= 6;
