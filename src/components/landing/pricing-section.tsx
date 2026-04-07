@@ -146,16 +146,16 @@ export function PricingSection() {
               </div>
             </div>
 
-            <div className="mt-10 flex gap-4 sm:w-[400px]">
+            <div className="mt-10 flex gap-3">
               <Link
                 href="/sign-up"
-                className="flex flex-1 items-center justify-center bg-primary py-4 font-mono text-xs font-semibold uppercase tracking-[0.1em] text-black transition-all hover:bg-transparent hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                className="flex flex-1 items-center justify-center whitespace-nowrap bg-primary px-4 py-4 font-mono text-xs font-semibold uppercase tracking-[0.1em] text-black transition-all hover:bg-transparent hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
               >
                 Activate Pipeline
               </Link>
               <Link
                 href="/demo"
-                className="flex flex-1 items-center justify-center border border-line py-4 font-mono text-xs uppercase tracking-[0.1em] transition-all hover:border-white hover:bg-[rgba(255,255,255,0.03)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                className="flex flex-1 items-center justify-center whitespace-nowrap border border-line px-4 py-4 font-mono text-xs uppercase tracking-[0.1em] transition-all hover:border-white hover:bg-[rgba(255,255,255,0.03)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
               >
                 Try Demo
               </Link>
