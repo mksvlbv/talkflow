@@ -30,6 +30,9 @@ export default function CreatePage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [tone, setTone] = useState<Tone>("professional");
+  const [formality, setFormality] = useState(70);
+  const [complexity, setComplexity] = useState(30);
+  const [brevity, setBrevity] = useState(85);
   const [copiedTab, setCopiedTab] = useState<Format | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -434,21 +437,32 @@ export default function CreatePage() {
             <div className="flex flex-col justify-between border-b border-line p-6 lg:w-[40%] lg:border-b-0 lg:border-r">
               <div className="mb-4 flex items-center justify-between">
                 <span className="sys-label">03 / Semantic Parameters</span>
-                <span className="font-mono text-[9px] text-white/20">AUTO_CALIBRATED</span>
+                <span className="font-mono text-[9px] text-white/20">TONE: {tone.toUpperCase()}</span>
               </div>
-              <div className="flex flex-col gap-4 opacity-60">
+              <div className="flex flex-col gap-4">
                 {[
-                  { left: "CASUAL", right: "PROFESSIONAL", fill: "70%" },
-                  { left: "ACADEMIC", right: "ACCESSIBLE", fill: "30%" },
-                  { left: "EXPANSIVE", right: "CONCISE", fill: "85%" },
+                  { left: "CASUAL", right: "PROFESSIONAL", value: formality, setter: setFormality },
+                  { left: "ACADEMIC", right: "ACCESSIBLE", value: complexity, setter: setComplexity },
+                  { left: "EXPANSIVE", right: "CONCISE", value: brevity, setter: setBrevity },
                 ].map((slider) => (
                   <div key={slider.left} className="flex items-center gap-4">
                     <span className="w-20 font-mono text-[9px] text-text-sub">{slider.left}</span>
-                    <div className="relative h-0.5 flex-1 bg-line">
-                      <div className="absolute h-full bg-primary" style={{ width: slider.fill }} />
-                      <div
-                        className="absolute top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary bg-white"
-                        style={{ left: slider.fill }}
+                    <div className="relative flex flex-1 items-center">
+                      <div className="absolute h-0.5 w-full bg-line" />
+                      <div className="absolute h-0.5 bg-primary" style={{ width: `${slider.value}%` }} />
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        value={slider.value}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          slider.setter(v);
+                          if (slider.left === "CASUAL") {
+                            setTone(v > 60 ? "professional" : v < 40 ? "casual" : "bold");
+                          }
+                        }}
+                        className="relative z-10 h-3 w-full cursor-pointer appearance-none bg-transparent [&::-moz-range-thumb]:size-2.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border [&::-moz-range-thumb]:border-primary [&::-moz-range-thumb]:bg-white [&::-webkit-slider-thumb]:size-2.5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-primary [&::-webkit-slider-thumb]:bg-white"
                       />
                     </div>
                     <span className="w-20 text-right font-mono text-[9px] text-white">{slider.right}</span>
