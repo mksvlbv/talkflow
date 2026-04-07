@@ -12,8 +12,6 @@ export default function Home() {
   return (
     <>
       <ScrollNavbar />
-      <div className="noise-overlay fixed inset-0 z-[100]" />
-      <div className="grid-bg fixed inset-0 z-0" />
       <main id="main-content" className="relative">
         {/* ── 1. HERO ── */}
         <HeroSection />
@@ -23,9 +21,13 @@ export default function Home() {
           className="pointer-events-none relative z-[2] -mt-1"
           style={{
             height: 160,
-            background: "linear-gradient(to bottom, #0a0604 0%, #060606 100%)",
+            background: "linear-gradient(to bottom, #060606 0%, #060606 100%)",
           }}
         />
+
+        {/* Ambient overlays (below hero only to avoid shader conflict) */}
+        <div className="noise-overlay fixed inset-0 z-[100]" />
+        <div className="grid-bg fixed inset-0 z-0" />
 
         {/* ── 2. PRODUCT DEMO ── */}
         <ProductDemoSection />

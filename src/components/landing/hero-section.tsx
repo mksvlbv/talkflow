@@ -11,10 +11,15 @@ export function HeroSection() {
   const { isSignedIn } = useAuth();
   return (
     <section
-      className="relative h-screen min-h-[700px] w-full overflow-hidden bg-[#0a0604]"
+      className="relative h-screen min-h-[700px] w-full overflow-hidden bg-background"
     >
       {/* WebGL shader background */}
       <HeroShaderCanvas />
+
+      {/* Perimeter frame */}
+      <div
+        className="pointer-events-none absolute inset-6 z-10 rounded-2xl border border-white/12"
+      />
 
       {/* UI layer */}
       <div
