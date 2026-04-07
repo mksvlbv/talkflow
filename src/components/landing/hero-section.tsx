@@ -16,11 +16,6 @@ export function HeroSection() {
       {/* WebGL shader background */}
       <HeroShaderCanvas />
 
-      {/* Perimeter frame */}
-      <div
-        className="pointer-events-none absolute inset-6 z-10 rounded-2xl border border-white/12"
-      />
-
       {/* UI layer */}
       <div
         className="pointer-events-none relative z-20 flex h-full w-full flex-col p-[clamp(24px,4vw,40px)_clamp(16px,4vw,48px)_clamp(24px,4vw,48px)]"
