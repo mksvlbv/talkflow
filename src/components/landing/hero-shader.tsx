@@ -10,7 +10,7 @@ void main() {
 `;
 
 const FRAGMENT_SHADER = `
-precision highp float;
+precision mediump float;
 uniform float u_time;
 uniform vec2 u_resolution;
 
@@ -32,7 +32,7 @@ float noise(vec2 st) {
 float fbm(vec2 st) {
     float value = 0.0;
     float amplitude = 0.5;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 4; i++) {
         value += amplitude * noise(st);
         st *= 2.0;
         amplitude *= 0.5;
@@ -118,7 +118,7 @@ export function HeroShaderCanvas() {
 
     function resize() {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio, 1.5);
+      const dpr = Math.min(window.devicePixelRatio, 1);
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
     }
