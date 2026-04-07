@@ -32,7 +32,7 @@ float noise(vec2 st) {
 float fbm(vec2 st) {
     float value = 0.0;
     float amplitude = 0.5;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         value += amplitude * noise(st);
         st *= 2.0;
         amplitude *= 0.5;
@@ -44,28 +44,17 @@ void main() {
     vec2 st = gl_FragCoord.xy / u_resolution.xy;
     st.x *= u_resolution.x / u_resolution.y;
 
-    vec2 q = vec2(0.0);
-    q.x = fbm(st + 0.00 * u_time);
-    q.y = fbm(st + vec2(1.0));
+    float q = fbm(st + 0.02 * u_time);
+    float r = fbm(st + q + vec2(1.7, 9.2) + 0.04 * u_time);
+    float f = fbm(st + vec2(r));
 
-    vec2 r = vec2(0.0);
-    r.x = fbm(st + 1.0 * q + vec2(1.7, 9.2) + 0.05 * u_time);
-    r.y = fbm(st + 1.0 * q + vec2(8.3, 2.8) + 0.026 * u_time);
-
-    float f = fbm(st + r);
-
-    // Warm orange/amber palette (accent: #F0551E)
-    vec3 colorDark  = vec3(0.12, 0.06, 0.04);  // deep warm dark
-    vec3 colorMid   = vec3(0.50, 0.22, 0.08);  // warm copper/amber
-    vec3 colorLight = vec3(0.94, 0.52, 0.18);  // bright orange highlight
+    vec3 colorDark  = vec3(0.12, 0.06, 0.04);
+    vec3 colorMid   = vec3(0.50, 0.22, 0.08);
+    vec3 colorLight = vec3(0.94, 0.52, 0.18);
 
     vec3 color = mix(colorDark, colorMid, clamp((f * f) * 4.0, 0.0, 1.0));
-    color = mix(color, colorLight, clamp(length(q), 0.0, 1.0));
-    color = mix(color, colorDark, clamp(length(r.x), 0.0, 1.0));
-
-    // Silk-like ridge highlights
-    float ridge = abs(fbm(st * 2.0 + u_time * 0.1) - 0.5) * 2.0;
-    color += colorLight * pow(1.0 - ridge, 4.0) * 0.15;
+    color = mix(color, colorLight, clamp(q, 0.0, 1.0));
+    color = mix(color, colorDark, clamp(r, 0.0, 1.0));
 
     gl_FragColor = vec4((f * f * f + 0.6 * f * f + 0.5 * f) * color, 1.0);
 }
@@ -118,7 +107,7 @@ export function HeroShaderCanvas() {
 
     function resize() {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio, 1);
+      const dpr = 0.5;
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
     }
@@ -126,29 +115,33 @@ export function HeroShaderCanvas() {
     resize();
     window.addEventListener("resize", resize);
 
+    const FRAME_MS = 1000 / 30;
     let start = performance.now();
-    function render() {
+    let lastFrame = 0;
+    function render(now: number) {
       if (!gl || !canvas || !visibleRef.current) return;
+      rafRef.current = requestAnimationFrame(render);
+      if (now - lastFrame < FRAME_MS) return;
+      lastFrame = now;
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.useProgram(program);
       gl.enableVertexAttribArray(posAttr);
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.vertexAttribPointer(posAttr, 2, gl.FLOAT, false, 0, 0);
-      gl.uniform1f(timeLoc, (performance.now() - start) / 1000);
+      gl.uniform1f(timeLoc, (now - start) / 1000);
       gl.uniform2f(resLoc, canvas.width, canvas.height);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
-      rafRef.current = requestAnimationFrame(render);
     }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         visibleRef.current = entry.isIntersecting;
-        if (entry.isIntersecting) render();
+        if (entry.isIntersecting) render(performance.now());
       },
       { threshold: 0 }
     );
     observer.observe(canvas);
-    render();
+    render(performance.now());
 
     return () => {
       cancelAnimationFrame(rafRef.current);

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import {
   Clock,
+  ExternalLink,
   GitBranch,
   LayoutDashboard,
   LogIn,
@@ -61,6 +62,17 @@ export function AppSidebar({ isPreview = false }: { isPreview?: boolean }) {
           );
         })}
       </nav>
+
+      {/* Home link */}
+      <div className="px-5 pb-2">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-[11px] text-text-sub transition-colors hover:text-foreground"
+        >
+          <ExternalLink className="size-3" />
+          Back to Home
+        </Link>
+      </div>
 
       {/* User */}
       <div className="border-t border-line p-4">

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { UserButton } from "@clerk/nextjs";
 import {
   Clock,
+  ExternalLink,
   GitBranch,
   LayoutDashboard,
   LogIn,
@@ -70,6 +71,14 @@ export function MobileNav({ isPreview = false }: { isPreview?: boolean }) {
               </Link>
             );
           })}
+          <Link
+            href="/"
+            onClick={() => setOpen(false)}
+            className="flex items-center gap-3 px-3 py-3 text-sm text-text-sub transition-colors hover:text-foreground"
+          >
+            <ExternalLink className="size-4" />
+            Back to Home
+          </Link>
           <div className="mt-2 border-t border-line px-3 pt-3">
             {isPreview ? (
               <Link
