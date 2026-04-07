@@ -1,14 +1,42 @@
 import type { Metadata } from "next";
 
 import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Vibe Voice MVP",
+  title: "TalkFlow — Voice to Structured Content",
   description:
-    "Micro MVP with Clerk auth, OpenAI voice transcription, Prisma on Supabase, Stripe subscription, and shadcn/ui.",
+    "Turn your voice into publish-ready content. Record, transcribe, and generate Twitter threads, LinkedIn posts, and summaries in seconds.",
+  openGraph: {
+    title: "TalkFlow — Voice to Structured Content",
+    description:
+      "Turn your voice into publish-ready content. Record, transcribe, and generate Twitter threads, LinkedIn posts, and summaries in seconds.",
+    type: "website",
+    locale: "en_US",
+    siteName: "TalkFlow",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TalkFlow — Voice to Structured Content",
+    description:
+      "Turn your voice into publish-ready content. Record, transcribe, and generate Twitter threads, LinkedIn posts, and summaries in seconds.",
+  },
 };
 
 export default function RootLayout({
@@ -17,14 +45,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" className="h-full antialiased">
-        <body className="min-h-full">
-          <div className="relative flex min-h-screen flex-col">
-            <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(210,118,70,0.18),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(62,120,106,0.16),transparent_35%),linear-gradient(180deg,rgba(255,251,245,1),rgba(247,240,232,1))]" />
+    <ClerkProvider appearance={{ baseTheme: dark }}>
+      <html
+        lang="en"
+        className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      >
+        <body className="min-h-full bg-background text-foreground">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-black"
+          >
+            Skip to content
+          </a>
+          <div className="flex min-h-screen flex-col">
             {children}
           </div>
-          <Toaster richColors position="top-right" />
+          <Toaster
+            richColors
+            position="top-right"
+            theme="dark"
+            toastOptions={{
+              style: {
+                background: "#0a0a0a",
+                border: "1px solid #242424",
+                color: "#ffffff",
+              },
+            }}
+          />
         </body>
       </html>
     </ClerkProvider>

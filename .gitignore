@@ -35,12 +35,24 @@ yarn-error.log*
 AGENTS.md
 CLAUDE.md
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files
+.env
+.env.local
+.env.production
+.env.development
+!.env.example
 
 # vercel
 .vercel
 .promptfoo/
+
+# dev / audit artifacts
+/screenshots/
+/scripts/
+/plans/
+/test-results/
+1.txt
+task1.txt
 
 # typescript
 *.tsbuildinfo

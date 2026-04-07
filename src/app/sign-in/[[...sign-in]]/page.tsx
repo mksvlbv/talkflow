@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 import { SignIn } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+
+import { BrandLogo } from "@/components/brand-logo";
 
 type SignInPageProps = {
   searchParams: Promise<{
@@ -10,43 +13,46 @@ type SignInPageProps = {
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   const { redirect_url } = await searchParams;
-  const redirectUrl = redirect_url ?? "/studio";
+  const redirectUrl = redirect_url ?? "/dashboard";
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="grid w-full max-w-5xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="rounded-[36px] border border-white/60 bg-[linear-gradient(180deg,rgba(255,251,245,0.95),rgba(244,232,222,0.88))] p-8 shadow-[0_30px_80px_-40px_rgba(38,25,18,0.4)]">
-          <p className="text-sm font-medium uppercase tracking-[0.3em] text-primary">
-            Clerk auth
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight">
-            Sign in to unlock the next recording.
+    <main className="relative flex min-h-screen flex-col px-6 py-12">
+      <div className="noise-overlay fixed inset-0 z-[100]" />
+      <div className="grid-bg fixed inset-0 z-0" />
+      <div className="relative z-10 mx-auto w-full max-w-4xl">
+        <BrandLogo href="/" className="mb-12" />
+      </div>
+      <div className="relative z-10 mx-auto grid w-full max-w-4xl flex-1 items-center gap-8 lg:grid-cols-[1fr_1fr]">
+        <section className="flex flex-col justify-center">
+          <p className="sys-label mb-4">Authentication</p>
+          <h1 className="text-3xl font-light leading-tight tracking-tight sm:text-4xl">
+            Sign in to your
+            <br />
+            <span className="text-primary">pipeline.</span>
           </h1>
-          <p className="mt-4 max-w-xl text-base leading-8 text-muted-foreground">
-            The brief asks for a free first take, then authentication, then the Stripe subscription. This page is the middle step of that funnel.
+          <p className="mt-4 max-w-sm text-sm font-light leading-relaxed text-text-sub">
+            Access your dashboard, recordings, and generated content.
+            Your voice-to-content workflow awaits.
           </p>
-          <div className="mt-8 space-y-4 text-sm text-muted-foreground">
-            <p>After sign-in you land on pricing, subscribe in Stripe sandbox, and then use the `/studio` workspace.</p>
-            <p>
-              Need a fresh account?{" "}
-              <Link
-                href={`/sign-up?redirect_url=${encodeURIComponent(redirectUrl)}`}
-                className="font-medium text-foreground underline-offset-4 hover:underline"
-              >
-                Create one here
-              </Link>
-              .
-            </p>
-          </div>
+          <p className="mt-6 text-sm text-text-sub">
+            No account?{" "}
+            <Link
+              href={`/sign-up?redirect_url=${encodeURIComponent(redirectUrl)}`}
+              className="text-primary transition-colors hover:brightness-110"
+            >
+              Create one
+            </Link>
+          </p>
         </section>
 
-        <section className="flex items-center justify-center rounded-[36px] border border-white/60 bg-white/80 p-4 shadow-[0_30px_80px_-40px_rgba(38,25,18,0.4)] backdrop-blur">
+        <section className="flex items-center justify-center border border-line bg-panel p-6">
           <SignIn
             path="/sign-in"
             routing="path"
             signUpUrl="/sign-up"
             forceRedirectUrl={redirectUrl}
-            fallbackRedirectUrl="/studio"
+            fallbackRedirectUrl="/dashboard"
+            appearance={{ baseTheme: dark }}
           />
         </section>
       </div>

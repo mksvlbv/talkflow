@@ -1,9 +1,9 @@
 import Link from "next/link";
 
 import { auth } from "@clerk/nextjs/server";
-import { CheckCircle2, RefreshCcw } from "lucide-react";
+import { ArrowRight, CheckCircle2, RefreshCcw } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { CornerMarkers } from "@/components/landing/corner-markers";
 import { getAppUserByClerkId } from "@/lib/app-user";
 import { syncCheckoutSession } from "@/lib/billing";
 import { hasActiveSubscription } from "@/lib/subscription";
@@ -32,40 +32,45 @@ export default async function BillingSuccessPage({
   const isActive = hasActiveSubscription(appUser?.subscription);
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl rounded-[36px] border border-white/65 bg-white/85 p-8 shadow-[0_30px_80px_-45px_rgba(38,25,18,0.35)] backdrop-blur">
-        <Badge variant="secondary">Billing result</Badge>
-        <div className="mt-5 flex items-center gap-3 text-primary">
+    <main className="flex min-h-screen items-center justify-center px-6">
+      <div className="noise-overlay fixed inset-0 z-[100]" />
+      <div className="grid-bg fixed inset-0 z-0" />
+      <div className="relative z-10 w-full max-w-lg border border-line bg-panel p-10 text-center">
+        <CornerMarkers size={8} />
+
+        <div className="mb-6 flex justify-center text-primary">
           {isActive ? (
-            <CheckCircle2 className="size-10" />
+            <CheckCircle2 className="size-12" />
           ) : (
-            <RefreshCcw className="size-10" />
+            <RefreshCcw className="size-12 animate-spin" />
           )}
-          <h1 className="text-3xl font-semibold">
-            {isActive
-              ? "Subscription activated"
-              : "Payment succeeded, waiting for final sync"}
-          </h1>
         </div>
 
-        <p className="mt-5 text-base leading-8 text-muted-foreground">
+        <h1 className="text-2xl font-light tracking-tight">
           {isActive
-            ? "Your Stripe checkout completed and the application can now unlock the private studio."
-            : "The success redirect landed correctly. If the webhook is still propagating, refresh once or open the studio page again."}
+            ? "Subscription activated."
+            : "Processing payment…"}
+        </h1>
+
+        <p className="mx-auto mt-4 max-w-sm text-sm font-light leading-relaxed text-text-sub">
+          {isActive
+            ? "Your Pro Pipeline is now active. Start creating unlimited content with your voice."
+            : "Payment received. Waiting for confirmation — refresh in a moment if needed."}
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
-            href="/studio"
-            className="inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground"
+            href="/dashboard"
+            className="inline-flex h-11 items-center gap-2 bg-primary px-6 text-sm font-medium text-primary-foreground transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           >
-            Open studio
+            Open Dashboard
+            <ArrowRight className="size-4" />
           </Link>
           <Link
             href="/pricing"
-            className="inline-flex h-11 items-center justify-center rounded-full border border-border/80 bg-white px-5 text-sm font-medium"
+            className="inline-flex h-11 items-center border border-line-active px-6 text-sm text-text-sub transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           >
-            Back to pricing
+            Back to Pricing
           </Link>
         </div>
       </div>

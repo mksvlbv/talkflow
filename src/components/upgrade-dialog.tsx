@@ -2,16 +2,7 @@
 
 import Link from "next/link";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { ArrowRight, X } from "lucide-react";
 
 type UpgradeDialogProps = {
   open: boolean;
@@ -24,40 +15,61 @@ export function UpgradeDialog({
   onOpenChange,
   reason,
 }: UpgradeDialogProps) {
+  if (!open) return null;
+
   const isAuthRequired = reason === "AUTH_REQUIRED";
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {isAuthRequired ? "Use your free sample first, then sign in" : "Free mode is finished"}
-          </DialogTitle>
-          <DialogDescription>
-            {isAuthRequired
-              ? "The first recording is free. The second recording unlocks behind Clerk authentication and the Stripe sandbox subscription."
-              : "You are signed in, but the paid workspace is protected by an active Stripe subscription before the next recording can be processed."}
-          </DialogDescription>
-        </DialogHeader>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={() => onOpenChange(false)}
+      />
 
-        <DialogFooter className="sm:justify-start">
+      {/* Modal */}
+      <div className="relative z-10 w-full max-w-md border border-line bg-panel p-8">
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="absolute right-4 top-4 text-text-sub transition-colors hover:text-white"
+        >
+          <X className="size-4" />
+        </button>
+
+        <p className="sys-label mb-3 flex items-center gap-2">
+          <span className="inline-block size-1 bg-primary" />
+          {isAuthRequired ? "Sign In Required" : "Upgrade Required"}
+        </p>
+
+        <h2 className="text-xl font-light tracking-tight">
+          {isAuthRequired
+            ? "Sign in to continue."
+            : "Free tier limit reached."}
+        </h2>
+
+        <p className="mt-3 text-sm font-light leading-relaxed text-text-sub">
+          {isAuthRequired
+            ? "Your free recording is ready. Sign in to access it and unlock more features."
+            : "Upgrade to Pro Pipeline for unlimited voice capture, multi-format generation, and tone control."}
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
             href={isAuthRequired ? "/sign-in?redirect_url=/pricing" : "/pricing"}
-            className={cn(buttonVariants({ size: "lg" }), "rounded-full")}
+            className="inline-flex h-11 flex-1 items-center justify-center gap-2 bg-primary text-sm font-medium text-primary-foreground transition-all hover:brightness-110"
           >
-            {isAuthRequired ? "Continue with Clerk" : "Open pricing"}
+            {isAuthRequired ? "Sign In" : "View Plans"}
+            <ArrowRight className="size-4" />
           </Link>
           <Link
             href="/sign-up?redirect_url=/pricing"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "lg" }),
-              "rounded-full",
-            )}
+            className="inline-flex h-11 flex-1 items-center justify-center border border-line-active text-sm text-text-sub transition-colors hover:border-primary hover:text-primary"
           >
-            Create account
+            Create Account
           </Link>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </div>
+    </div>
   );
 }

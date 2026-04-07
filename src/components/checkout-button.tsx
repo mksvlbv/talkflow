@@ -5,14 +5,12 @@ import { useTransition } from "react";
 import { LoaderCircle, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-
 type CheckoutButtonProps = {
   label?: string;
 };
 
 export function CheckoutButton({
-  label = "Start Stripe subscription",
+  label = "Start Pro Trial",
 }: CheckoutButtonProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -53,18 +51,17 @@ export function CheckoutButton({
   };
 
   return (
-    <Button
+    <button
       onClick={handleCheckout}
       disabled={isPending}
-      size="lg"
-      className="h-11 rounded-full px-5"
+      className="flex h-11 w-full items-center justify-center gap-2 bg-primary text-sm font-medium text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
     >
       {isPending ? (
-        <LoaderCircle className="animate-spin" />
+        <LoaderCircle className="size-4 animate-spin" />
       ) : (
-        <Sparkles />
+        <Sparkles className="size-4" />
       )}
       {label}
-    </Button>
+    </button>
   );
 }

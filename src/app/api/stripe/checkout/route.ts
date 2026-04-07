@@ -34,7 +34,7 @@ export async function POST() {
 
     if (hasActiveSubscription(appUser.subscription)) {
       return NextResponse.json({
-        url: `${getAppUrl()}/studio`,
+        url: `${getAppUrl()}/dashboard`,
         code: "ALREADY_SUBSCRIBED",
       });
     }

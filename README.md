@@ -1,140 +1,162 @@
-# Voice MVP
+<div align="center">
 
-Voice-to-text web app built with Next.js, Clerk, OpenAI, Supabase, Prisma, Stripe, and shadcn/ui.
+# TalkFlow
 
-## Overview
+**Voice-to-content engine that turns raw speech into publish-ready content.**
 
-The application provides a simple gated transcription flow:
+Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in seconds.
 
-- Visitors can create one free voice transcription.
-- Additional usage requires authentication.
-- Paid users unlock a private studio workspace.
-- Subscriber transcripts are stored in Postgres via Prisma and can upload raw audio to Supabase Storage.
+[![Next.js](https://img.shields.io/badge/Next.js_16-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind](https://img.shields.io/badge/Tailwind_CSS_4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)](https://openai.com/)
+[![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
+[![Clerk](https://img.shields.io/badge/Clerk-6C47FF?logo=clerk&logoColor=white)](https://clerk.com/)
+
+[Live Demo](https://talkflow-mksvlbv.vercel.app) · [Try Without Account](https://talkflow-mksvlbv.vercel.app/preview)
+
+</div>
+
+---
+
+![TalkFlow Dashboard](public/og-dashboard.png)
 
 ## Features
 
-- Voice recording in the browser
-- OpenAI speech-to-text transcription
-- One free transcription for guests
-- Clerk sign-in and sign-up flow
-- Stripe subscription checkout
-- Private paid studio for subscribers
-- Transcript persistence with Prisma + Supabase Postgres
-- Optional audio upload to Supabase Storage
+- **Voice capture** — browser-native recording with real-time waveform
+- **AI transcription** — OpenAI Whisper for accurate speech-to-text
+- **Multi-format output** — Twitter threads, LinkedIn posts, bullet summaries
+- **Tone control** — casual, professional, or bold styles
+- **Regeneration** — re-generate with different tone without re-recording
+- **Interactive demo** — try the engine without signing up
+- **Preview mode** — explore the full app without authentication
+- **Stripe billing** — free tier + Pro Pipeline ($19/mo)
+- **Dark design system** — custom tokens, Inter + JetBrains Mono typography
+- **Responsive** — mobile-first with sidebar and bottom navigation
 
 ## Tech Stack
 
-- Next.js 16 App Router
-- React 19
-- Clerk
-- OpenAI API
-- Prisma 7
-- Supabase
-- Stripe
-- shadcn/ui
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 16 (Turbopack) |
+| UI | React 19, Tailwind CSS 4, Lucide Icons |
+| Auth | Clerk |
+| AI | OpenAI (Whisper + GPT-4o-mini) |
+| Database | Prisma 7 + Supabase Postgres |
+| Storage | Supabase Storage |
+| Payments | Stripe |
+| Testing | Playwright |
 
-## Routes
+## Getting Started
 
-- `/` public landing page with the free transcription flow
-- `/pricing` subscription page
-- `/billing/success` post-checkout handoff
-- `/studio` private subscriber workspace
-- `/sign-in`
-- `/sign-up`
-- `/api/transcribe`
-- `/api/stripe/checkout`
-- `/api/stripe/portal`
-- `/api/stripe/webhook`
+### Prerequisites
 
-## Environment Variables
+- Node.js 20+
+- npm 10+
+- [Stripe CLI](https://stripe.com/docs/stripe-cli) (for webhook testing)
 
-Copy `.env.example` to `.env` and fill in the required values.
-
-Required services:
-
-- Clerk
-- OpenAI
-- Supabase
-- Stripe
-
-Notes:
-
-- `DATABASE_URL` should point to your Supabase Postgres database.
-- If the direct Supabase host does not resolve locally, use the Supabase `Session pooler` URI instead.
-- `STRIPE_PRICE_ID` must point to a recurring Stripe price.
-- `SUPABASE_STORAGE_BUCKET` should match your storage bucket name if audio uploads are enabled.
-
-## Local Development
-
-1. Install dependencies:
+### Installation
 
 ```bash
+git clone https://github.com/mksvlbv/talkflow.git
+cd talkflow
 npm install
 ```
 
-2. Generate the Prisma client:
+### Environment Variables
+
+Copy the template and fill in your keys:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Service | Required |
+|----------|---------|----------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk | Yes |
+| `CLERK_SECRET_KEY` | Clerk | Yes |
+| `OPENAI_API_KEY` | OpenAI | Yes |
+| `DATABASE_URL` | Supabase Postgres | Yes |
+| `STRIPE_SECRET_KEY` | Stripe | Yes |
+| `STRIPE_WEBHOOK_SECRET` | Stripe | Yes |
+| `STRIPE_PRICE_ID` | Stripe | Yes |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase | Optional |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase | Optional |
+| `SUPABASE_STORAGE_BUCKET` | Supabase | Optional |
+| `NEXT_PUBLIC_APP_URL` | — | Yes |
+
+### Database Setup
 
 ```bash
 npm run db:generate
-```
-
-3. Push the schema to the database:
-
-```bash
 npm run db:push
 ```
 
-4. Start development mode:
+### Run Development Server
 
 ```bash
 npm run dev
 ```
 
-5. In a second terminal, forward Stripe webhooks:
+In a second terminal, forward Stripe webhooks:
 
 ```bash
 stripe listen --forward-to http://localhost:3000/api/stripe/webhook
 ```
 
-## Stable Local Run
+Open [http://localhost:3000](http://localhost:3000).
 
-If `npm run dev` is noisy on Windows because of a Next.js 16 Turbopack issue, use:
+## Project Structure
 
-```bash
-npm run build
-npm run start
+```
+src/
+├── app/
+│   ├── (app)/           # Auth-gated pages (dashboard, create, history, settings, etc.)
+│   ├── api/             # API routes (process, generate, transcribe, stripe)
+│   ├── demo/            # Interactive public demo
+│   ├── billing/         # Post-checkout success page
+│   ├── pricing/         # Pricing page
+│   ├── preview/         # Preview mode redirect
+│   ├── terms/           # Terms of Service
+│   ├── privacy/         # Privacy Policy
+│   └── security/        # Security page
+├── components/
+│   ├── app/             # App shell (sidebar, mobile nav, workspace actions)
+│   ├── landing/         # Landing page sections
+│   └── ui/              # shadcn/ui primitives
+└── lib/                 # Server utilities (prisma, stripe, openai, supabase, auth)
 ```
 
-## Available Scripts
+## API Routes
 
-- `npm run dev`
-- `npm run build`
-- `npm run start`
-- `npm run lint`
-- `npm run db:generate`
-- `npm run db:push`
-- `npm run promptfoo:eval`
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/process` | Voice-to-content (transcribe + generate) |
+| `POST` | `/api/generate` | Text-to-content (generate only) |
+| `POST` | `/api/transcribe` | Audio transcription |
+| `POST` | `/api/stripe/checkout` | Create Stripe checkout session |
+| `POST` | `/api/stripe/portal` | Customer billing portal |
+| `POST` | `/api/stripe/webhook` | Stripe webhook handler |
 
-## Prisma
+## Testing
 
-Prisma 7 is configured through `prisma.config.ts`, and the active schema file is `prisma-v7-schema.prisma`.
+```bash
+npx playwright test
+```
 
-## Deployment
+Covers: landing page sections, demo interaction, responsive breakpoints, navigation, 404 handling.
 
-Recommended target: Vercel.
+## Deploy to Vercel
 
-Before deploying:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmksvlbv%2Ftalkflow)
 
-- add all environment variables to the hosting platform
-- configure the Stripe webhook endpoint
-- update `NEXT_PUBLIC_APP_URL` to the production domain
-- run `prisma db push` against the production database
+1. Click the button above or import the repo from [vercel.com/new](https://vercel.com/new)
+2. Add all environment variables from `.env.example`
+3. Set `NEXT_PUBLIC_APP_URL` to your production URL
+4. Configure Stripe webhook: `https://your-domain.vercel.app/api/stripe/webhook`
+5. Run `npx prisma db push` against production database
 
-## Verification
+## License
 
-The project has been verified with:
-
-- `npm run db:generate`
-- `npm run db:push`
-- `npm run lint`
-- `npm run build`
+[MIT](LICENSE)
