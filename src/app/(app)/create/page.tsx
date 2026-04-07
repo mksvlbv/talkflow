@@ -164,7 +164,7 @@ export default function CreatePage() {
   const showResults = transcript || outputs;
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden">
+    <div className="flex flex-1 flex-col overflow-y-auto lg:overflow-hidden">
       {/* Ambient effects (DNA) */}
       <div className="grid-bg fixed inset-0 z-0" />
 
@@ -292,7 +292,7 @@ export default function CreatePage() {
         </div>
       ) : (
         /* ── RESULTS VIEW (variant DNA — 40/60 split) ── */
-        <main className="flex flex-1 flex-col overflow-hidden lg:flex-row">
+        <main className="flex flex-1 flex-col overflow-visible lg:flex-row lg:overflow-hidden">
           {/* Left: Live Transcription (40%) */}
           <section className="flex w-full flex-col gap-6 p-6 lg:w-[40%] lg:p-8">
             <div className="relative flex flex-1 flex-col border border-line bg-panel p-8">
@@ -347,7 +347,7 @@ export default function CreatePage() {
           </section>
 
           {/* Right: Structured Outputs (60%) */}
-          <section className="flex w-full flex-col gap-4 overflow-hidden p-6 lg:w-[60%] lg:p-8">
+          <section className="flex w-full flex-col gap-4 overflow-visible p-6 lg:w-[60%] lg:overflow-hidden lg:p-8">
             <span className="sys-label px-2">02 / Structured Outputs</span>
 
             <div className="flex flex-1 flex-col gap-4 overflow-y-auto pr-2">
