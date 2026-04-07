@@ -107,7 +107,7 @@ export function HeroShaderCanvas() {
 
     function resize() {
       if (!canvas) return;
-      const dpr = 0.5;
+      const dpr = 0.75;
       canvas.width = canvas.clientWidth * dpr;
       canvas.height = canvas.clientHeight * dpr;
     }
@@ -153,7 +153,7 @@ export function HeroShaderCanvas() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 h-full w-full"
+      className="absolute -inset-1 h-[calc(100%+8px)] w-[calc(100%+8px)]"
       style={{ display: "block", zIndex: 0, pointerEvents: "none" }}
       aria-hidden="true"
     />
