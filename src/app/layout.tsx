@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   title: "TalkFlow — Voice to Structured Content",
   description:
     "Turn your voice into publish-ready content. Record, transcribe, and generate Twitter threads, LinkedIn posts, and summaries in seconds.",
+  metadataBase: new URL("https://talkflow-five.vercel.app"),
   openGraph: {
     title: "TalkFlow — Voice to Structured Content",
     description:
@@ -30,12 +31,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "TalkFlow",
+    images: [{ url: "/og-dashboard.png", width: 1200, height: 630, alt: "TalkFlow Dashboard" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "TalkFlow — Voice to Structured Content",
     description:
       "Turn your voice into publish-ready content. Record, transcribe, and generate Twitter threads, LinkedIn posts, and summaries in seconds.",
+    images: ["/og-dashboard.png"],
   },
 };
 

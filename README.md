@@ -14,7 +14,7 @@ Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in s
 [![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
 [![Clerk](https://img.shields.io/badge/Clerk-6C47FF?logo=clerk&logoColor=white)](https://clerk.com/)
 
-[Live Demo](https://talkflow-mksvlbv.vercel.app) · [Try Without Account](https://talkflow-mksvlbv.vercel.app/preview)
+[Live Demo](https://talkflow-five.vercel.app) · [Try Without Account](https://talkflow-five.vercel.app/preview)
 
 </div>
 
