@@ -18,7 +18,7 @@ export function HeroSection() {
 
       {/* Perimeter frame */}
       <div
-        className="pointer-events-none absolute inset-6 z-10 rounded-2xl border border-white/12"
+        className="pointer-events-none absolute inset-6 z-10 hidden rounded-2xl border border-white/12 sm:block"
       />
 
       {/* UI layer */}
