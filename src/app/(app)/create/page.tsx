@@ -35,6 +35,7 @@ export default function CreatePage() {
   const [brevity, setBrevity] = useState(85);
   const [copiedTab, setCopiedTab] = useState<Format | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [recordingId, setRecordingId] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -85,6 +86,7 @@ export default function CreatePage() {
       setElapsed(0);
       setOutputs(null);
       setTranscript("");
+      setRecordingId(null);
 
       timerRef.current = setInterval(() => {
         setElapsed((prev) => prev + 1);
@@ -125,6 +127,7 @@ export default function CreatePage() {
 
       setTranscript(data.transcript);
       setOutputs(data.outputs);
+      if (data.recordingId) setRecordingId(data.recordingId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Processing failed.");
     } finally {
@@ -141,7 +144,7 @@ export default function CreatePage() {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: transcript, tone }),
+        body: JSON.stringify({ text: transcript, tone, recordingId }),
       });
 
       const data = await res.json();

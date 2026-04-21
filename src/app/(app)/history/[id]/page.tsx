@@ -168,7 +168,7 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
               </div>
 
               <div className="flex flex-col gap-3">
-                <WorkspaceRegenerateButton />
+                <WorkspaceRegenerateButton documentId={recording.id} transcript={recording.transcript} />
                 <WorkspaceExportButton content={`Title: ${recording.title}\n\nSummary:\n${doc?.summary}\n\nLinkedIn:\n${doc?.linkedin}\n\nTwitter:\n${doc?.twitter}`} />
               </div>
             </div>
@@ -203,7 +203,7 @@ export default async function WorkspacePage({ params }: WorkspacePageProps) {
 
           {/* Actions */}
           <div className="mt-auto flex flex-col gap-3">
-            <WorkspaceRegenerateButton />
+            <WorkspaceRegenerateButton documentId={recording.id} transcript={recording.transcript} />
             <WorkspaceExportButton content={`Title: ${recording.title}\n\nSummary:\n${doc?.summary}\n\nLinkedIn:\n${doc?.linkedin}\n\nTwitter:\n${doc?.twitter}`} />
           </div>
         </aside>

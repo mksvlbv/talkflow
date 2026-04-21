@@ -18,6 +18,7 @@ export default function SettingsPage() {
   const [sliders, setSliders] = useState([84, 62, 45, 71]);
   const [toggles, setToggles] = useState({ semantic: true, empathy: false, cognitive: true });
   const [privacyToggles, setPrivacyToggles] = useState({ autoDelete: false, anonymize: false, localOnly: false });
+  const [templates, setTemplates] = useState<string[]>(["twitter", "linkedin", "summary"]);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function SettingsPage() {
         if (parsed.sliders) setSliders(parsed.sliders);
         if (parsed.toggles) setToggles(parsed.toggles);
         if (parsed.privacyToggles) setPrivacyToggles(parsed.privacyToggles);
+        if (parsed.templates) setTemplates(parsed.templates);
       }
     } catch (e) {}
   }, []);
@@ -36,9 +38,9 @@ export default function SettingsPage() {
   // Save to localStorage on change
   useEffect(() => {
     localStorage.setItem("talkflow_settings", JSON.stringify({
-      persona, sliders, toggles, privacyToggles
+      persona, sliders, toggles, privacyToggles, templates
     }));
-  }, [persona, sliders, toggles, privacyToggles]);
+  }, [persona, sliders, toggles, privacyToggles, templates]);
 
   const navItems: { key: NavItem; num: string; label: string }[] = [
     { key: "input", num: "01", label: "Input & Recognition" },
@@ -273,21 +275,54 @@ export default function SettingsPage() {
                   <p className="sys-label">Output Templates</p>
                 </div>
                 <div className="grid grid-cols-2 gap-3 p-6 sm:grid-cols-3">
-                  {["Twitter Thread", "LinkedIn Post", "Blog Outline", "Key Takeaways", "Newsletter", "Action Items"].map((fmt, i) => (
-                    <div
-                      key={fmt}
-                      className={`flex items-center justify-between border p-4 transition-all ${
-                        i < 2
-                          ? "border-primary bg-[rgba(240,85,30,0.05)]"
-                          : "border-line hover:border-line-active hover:bg-[rgba(255,255,255,0.02)]"
-                      }`}
-                    >
-                      <span className="font-mono text-[11px] text-[#d0d0d0]">{fmt}</span>
-                      <span className={`size-1.5 rounded-full ${
-                        i < 2 ? "bg-primary shadow-[0_0_6px_rgba(240,85,30,0.6)]" : "bg-white/20"
-                      }`} />
-                    </div>
-                  ))}
+                  {[
+                    { key: "twitter", label: "Twitter Thread", isPro: false },
+                    { key: "linkedin", label: "LinkedIn Post", isPro: false },
+                    { key: "summary", label: "Summary / Notes", isPro: false },
+                    { key: "blog", label: "Blog Outline", isPro: true },
+                    { key: "newsletter", label: "Newsletter", isPro: true },
+                    { key: "actionItems", label: "Action Items", isPro: true },
+                  ].map((fmt) => {
+                    const isActive = templates.includes(fmt.key);
+                    return (
+                      <button
+                        key={fmt.key}
+                        type="button"
+                        onClick={() => {
+                          if (fmt.isPro) {
+                            toast("This template requires a PRO subscription.");
+                            return;
+                          }
+                          setTemplates((prev) =>
+                            prev.includes(fmt.key)
+                              ? prev.filter((k) => k !== fmt.key)
+                              : [...prev, fmt.key]
+                          );
+                        }}
+                        className={`flex items-center justify-between border p-4 transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary ${
+                          isActive
+                            ? "border-primary bg-[rgba(240,85,30,0.05)]"
+                            : "border-line hover:border-line-active hover:bg-[rgba(255,255,255,0.02)]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className={`font-mono text-[11px] ${isActive ? "text-white" : "text-[#d0d0d0]"}`}>
+                            {fmt.label}
+                          </span>
+                          {fmt.isPro && (
+                            <span className="rounded-sm bg-white/10 px-1.5 py-0.5 text-[8px] uppercase text-white/30">
+                              PRO
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          className={`size-1.5 rounded-full ${
+                            isActive ? "bg-primary shadow-[0_0_6px_rgba(240,85,30,0.6)]" : "bg-white/20"
+                          }`}
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

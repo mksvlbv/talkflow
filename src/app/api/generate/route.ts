@@ -27,9 +27,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { text, tone = "professional" } = body as {
+    const { text, tone = "professional", recordingId } = body as {
       text?: string;
       tone?: string;
+      recordingId?: string;
     };
 
     if (!text || typeof text !== "string" || text.trim().length < 10) {
@@ -66,6 +67,19 @@ export async function POST(request: Request) {
         { message: "Failed to parse AI output.", raw },
         { status: 502 },
       );
+    }
+
+    if (body.recordingId) {
+      const { prisma } = await import("@/lib/prisma");
+      await prisma.document.update({
+        where: { recordingId: body.recordingId },
+        data: {
+          twitter: outputs.twitter,
+          linkedin: outputs.linkedin,
+          summary: outputs.summary,
+          tone: tone,
+        },
+      });
     }
 
     return NextResponse.json({ outputs });
