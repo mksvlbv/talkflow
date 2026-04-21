@@ -232,9 +232,9 @@ export default function CreatePage() {
           <div className="relative mb-12">
             {!isRecording && !isProcessing && (
               <>
-                <div className="absolute left-1/2 top-1/2 size-16 rounded-full border border-primary/20" style={{ animation: "pulse-ring 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite", animationDelay: "-0s" }} />
-                <div className="absolute left-1/2 top-1/2 size-16 rounded-full border border-primary/20" style={{ animation: "pulse-ring 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite", animationDelay: "-1s" }} />
-                <div className="absolute left-1/2 top-1/2 size-16 rounded-full border border-primary/20" style={{ animation: "pulse-ring 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite", animationDelay: "-2s" }} />
+                <div className="pointer-events-none absolute left-1/2 top-1/2 size-16 rounded-full border border-primary/20" style={{ animation: "pulse-ring 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite", animationDelay: "-0s" }} />
+                <div className="pointer-events-none absolute left-1/2 top-1/2 size-16 rounded-full border border-primary/20" style={{ animation: "pulse-ring 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite", animationDelay: "-1s" }} />
+                <div className="pointer-events-none absolute left-1/2 top-1/2 size-16 rounded-full border border-primary/20" style={{ animation: "pulse-ring 3s cubic-bezier(0.25,0.46,0.45,0.94) infinite", animationDelay: "-2s" }} />
               </>
             )}
 
@@ -267,7 +267,7 @@ export default function CreatePage() {
             </button>
 
             {isRecording && (
-              <div className="absolute left-0 top-[30%] h-[40%] w-[2px] bg-primary opacity-40 shadow-[0_0_10px_rgba(240,85,30,1)]" style={{ animation: "scan-line 4s linear infinite" }} />
+              <div className="pointer-events-none absolute left-0 top-[30%] h-[40%] w-[2px] bg-primary opacity-40 shadow-[0_0_10px_rgba(240,85,30,1)]" style={{ animation: "scan-line 4s linear infinite" }} />
             )}
           </div>
 
