@@ -24,6 +24,7 @@ model User {
   updatedAt              DateTime      @updatedAt
   subscription           Subscription?
   recordings             Recording[]
+  documents              Document[]
 }
 
 model Subscription {
@@ -52,6 +53,25 @@ model Recording {
   charCount        Int             @default(0)
   wordCount        Int             @default(0)
   createdAt        DateTime        @default(now())
+  document         Document?
+
+  @@index([userId, createdAt])
+}
+
+model Document {
+  id               String          @id @default(cuid())
+  userId           String
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recordingId      String?         @unique
+  recording        Recording?      @relation(fields: [recordingId], references: [id], onDelete: SetNull)
+  title            String          
+  transcript       String          @db.Text
+  twitter          String          @db.Text
+  linkedin         String          @db.Text
+  summary          String          @db.Text
+  tone             String          @default("professional")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
   @@index([userId, createdAt])
 }

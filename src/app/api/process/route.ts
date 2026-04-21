@@ -1,7 +1,12 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+import { getAppUserByClerkId, upsertAppUser } from "@/lib/app-user";
+import { getDisplayName, getPrimaryEmailAddress } from "@/lib/clerk-user";
 import { getOpenAI } from "@/lib/openai";
+import { prisma } from "@/lib/prisma";
+import { countWords, createRecordingTitle } from "@/lib/recordings";
+import { uploadAudioToSupabase } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
@@ -91,9 +96,60 @@ export async function POST(request: Request) {
       );
     }
 
+    // Step 3: Save to database
+    let appUser = await getAppUserByClerkId(userId);
+    if (!appUser) {
+      const clerkProfile = await currentUser();
+      appUser = await upsertAppUser({
+        clerkUserId: userId,
+        email: getPrimaryEmailAddress(clerkProfile),
+        name: getDisplayName(clerkProfile),
+        imageUrl: clerkProfile?.imageUrl ?? null,
+      });
+    }
+
+    const title = createRecordingTitle(transcript);
+    const wordCount = countWords(transcript);
+
+    const uploadedAudio = await uploadAudioToSupabase({
+      bytes,
+      contentType: audio.type || "audio/webm",
+      clerkUserId: userId,
+      fileName: audio.name || "recording.webm",
+    }).catch((err) => {
+      console.error("Audio upload failed:", err);
+      return null;
+    });
+
+    const recording = await prisma.recording.create({
+      data: {
+        userId: appUser.id,
+        title,
+        transcript,
+        audioUrl: uploadedAudio?.publicUrl,
+        audioStoragePath: uploadedAudio?.path,
+        charCount: transcript.length,
+        wordCount,
+      },
+    });
+
+    await prisma.document.create({
+      data: {
+        userId: appUser.id,
+        recordingId: recording.id,
+        title: title,
+        transcript: transcript,
+        twitter: outputs.twitter,
+        linkedin: outputs.linkedin,
+        summary: outputs.summary,
+        tone: tone,
+      },
+    });
+
     return NextResponse.json({
       transcript,
       outputs,
+      recordingId: recording.id,
     });
   } catch (error: any) {
     console.error("Process route failed:", error);
