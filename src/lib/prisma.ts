@@ -5,13 +5,16 @@ import { PrismaClient } from "@prisma/client";
 
 import { requireEnv } from "@/lib/env";
 
+import { Pool } from "pg";
+
 declare global {
   var prisma: PrismaClient | undefined;
 }
 
-const adapter = new PrismaPg({
+const pool = new Pool({
   connectionString: requireEnv("DATABASE_URL"),
 });
+const adapter = new PrismaPg(pool);
 
 export const prisma =
   globalThis.prisma ??
