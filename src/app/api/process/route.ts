@@ -66,6 +66,7 @@ export async function POST(request: Request) {
     // Step 2: Generate content
     const completion = await openai.chat.completions.create({
       model: "llama-3.3-70b-versatile",
+      response_format: { type: "json_object" },
       temperature: 0.7,
       max_tokens: 1500,
       messages: [
@@ -78,10 +79,11 @@ export async function POST(request: Request) {
     });
 
     const raw = completion.choices[0]?.message?.content?.trim() ?? "";
+    const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
 
     let outputs: { twitter: string; linkedin: string; summary: string };
     try {
-      outputs = JSON.parse(raw);
+      outputs = JSON.parse(cleaned);
     } catch {
       return NextResponse.json(
         { message: "Failed to parse AI output.", transcript },
