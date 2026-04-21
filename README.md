@@ -10,7 +10,7 @@ Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in s
 [![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind](https://img.shields.io/badge/Tailwind_CSS_4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)](https://openai.com/)
+[![Groq](https://img.shields.io/badge/Groq-f55036?logo=groq&logoColor=white)](https://groq.com/)
 [![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
 [![Clerk](https://img.shields.io/badge/Clerk-6C47FF?logo=clerk&logoColor=white)](https://clerk.com/)
 
@@ -25,7 +25,7 @@ Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in s
 ## Features
 
 - **Voice capture** — browser-native recording with real-time waveform
-- **AI transcription** — OpenAI Whisper for accurate speech-to-text
+- **AI transcription** — Groq Whisper Large V3 for ultra-fast, accurate speech-to-text
 - **Multi-format output** — Twitter threads, LinkedIn posts, bullet summaries
 - **Tone control** — casual, professional, or bold styles
 - **Regeneration** — re-generate with different tone without re-recording
@@ -42,7 +42,7 @@ Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in s
 | Framework | Next.js 16 (Turbopack) |
 | UI | React 19, Tailwind CSS 4, Lucide Icons |
 | Auth | Clerk |
-| AI | OpenAI (Whisper + GPT-4o-mini) |
+| AI | Groq (Whisper + Llama 3.3) |
 | Database | Prisma 7 + Supabase Postgres |
 | Storage | Supabase Storage |
 | Payments | Stripe |
@@ -76,7 +76,7 @@ cp .env.example .env
 |----------|---------|----------|
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk | Yes |
 | `CLERK_SECRET_KEY` | Clerk | Yes |
-| `OPENAI_API_KEY` | OpenAI | Yes |
+| `GROQ_API_KEY` | Groq | Yes |
 | `DATABASE_URL` | Supabase Postgres | Yes |
 | `STRIPE_SECRET_KEY` | Stripe | Yes |
 | `STRIPE_WEBHOOK_SECRET` | Stripe | Yes |

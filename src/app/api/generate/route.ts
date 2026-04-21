@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const openai = getOpenAI();
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 1500,
       messages: [

@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       file: new File([bytes], audio.name || "recording.webm", {
         type: audio.type || "audio/webm",
       }),
-      model: "gpt-4o-transcribe",
+      model: "whisper-large-v3",
     });
     const transcript = transcription.text.trim();
 

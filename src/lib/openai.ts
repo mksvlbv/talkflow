@@ -12,7 +12,8 @@ export function getOpenAI() {
   }
 
   cachedClient = new OpenAI({
-    apiKey: requireEnv("OPENAI_API_KEY"),
+    apiKey: requireEnv("GROQ_API_KEY"),
+    baseURL: "https://api.groq.com/openai/v1",
   });
 
   return cachedClient;

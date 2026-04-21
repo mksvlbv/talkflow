@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     const bytes = await audio.arrayBuffer();
     const transcription = await openai.audio.transcriptions.create({
       file: new File([bytes], audio.name || "recording.webm", { type: audio.type || "audio/webm" }),
-      model: "whisper-1",
+      model: "whisper-large-v3",
     });
     const transcript = transcription.text.trim();
 
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
 
     // Step 2: Generate content
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "llama-3.3-70b-versatile",
       temperature: 0.7,
       max_tokens: 1500,
       messages: [
