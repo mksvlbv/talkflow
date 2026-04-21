@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 
 import {
   Briefcase,
@@ -39,6 +39,22 @@ export default function CreatePage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("talkflow_settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.sliders && parsed.sliders.length >= 4) {
+          const rigor = parsed.sliders[0];
+          setFormality(rigor);
+          setComplexity(parsed.sliders[2] || 30);
+          setBrevity(parsed.sliders[1] || 85);
+          setTone(rigor > 60 ? "professional" : rigor < 40 ? "casual" : "bold");
+        }
+      }
+    } catch (e) {}
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {

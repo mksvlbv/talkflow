@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { UserProfile, useAuth } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
@@ -18,6 +18,27 @@ export default function SettingsPage() {
   const [sliders, setSliders] = useState([84, 62, 45, 71]);
   const [toggles, setToggles] = useState({ semantic: true, empathy: false, cognitive: true });
   const [privacyToggles, setPrivacyToggles] = useState({ autoDelete: false, anonymize: false, localOnly: false });
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("talkflow_settings");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.persona !== undefined) setPersona(parsed.persona);
+        if (parsed.sliders) setSliders(parsed.sliders);
+        if (parsed.toggles) setToggles(parsed.toggles);
+        if (parsed.privacyToggles) setPrivacyToggles(parsed.privacyToggles);
+      }
+    } catch (e) {}
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("talkflow_settings", JSON.stringify({
+      persona, sliders, toggles, privacyToggles
+    }));
+  }, [persona, sliders, toggles, privacyToggles]);
 
   const navItems: { key: NavItem; num: string; label: string }[] = [
     { key: "input", num: "01", label: "Input & Recognition" },

@@ -20,7 +20,7 @@ export function WorkspaceRegenerateButton() {
   return (
     <button
       type="button"
-      onClick={() => toast("Section regenerated with updated parameters")}
+      onClick={() => toast("Regeneration has been disabled for this demo view.")}
       className="flex w-full items-center justify-between border border-line bg-panel px-4 py-2.5 font-mono text-[0.7rem] uppercase text-white transition-all hover:border-primary hover:bg-[rgba(240,85,30,0.05)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
     >
       <span>Regenerate Section</span>
@@ -29,11 +29,18 @@ export function WorkspaceRegenerateButton() {
   );
 }
 
-export function WorkspaceExportButton() {
+export function WorkspaceExportButton({ content }: { content?: string }) {
   return (
     <button
       type="button"
-      onClick={() => toast("Document exported to clipboard")}
+      onClick={() => {
+        if (content) {
+          navigator.clipboard.writeText(content);
+          toast("Document exported to clipboard");
+        } else {
+          toast("No content available to export");
+        }
+      }}
       className="flex w-full items-center justify-center border border-primary bg-primary px-4 py-2.5 font-mono text-[0.7rem] font-bold uppercase text-black transition-all hover:bg-transparent hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
     >
       EXPORT_DOCUMENT
