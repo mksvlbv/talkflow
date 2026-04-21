@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx prisma db push --schema=prisma-v7-schema.prisma && npx prisma generate --schema=prisma-v7-schema.prisma && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "postinstall": "prisma generate --schema=prisma-v7-schema.prisma",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "promptfoo:eval": "promptfoo eval -c promptfooconfig.yaml"
