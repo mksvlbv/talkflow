@@ -93,10 +93,10 @@ export async function POST(request: Request) {
       transcript,
       outputs,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Process route failed:", error);
     return NextResponse.json(
-      { message: "Processing failed. Check configuration and try again." },
+      { message: `Processing failed: ${error?.message || "Unknown error"}` },
       { status: 500 },
     );
   }
