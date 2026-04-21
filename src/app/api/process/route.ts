@@ -51,10 +51,8 @@ export async function POST(request: Request) {
     // Step 1: Transcribe
     const bytes = await audio.arrayBuffer();
     const transcription = await openai.audio.transcriptions.create({
-      file: new File([bytes], audio.name || "recording.webm", {
-        type: audio.type || "audio/webm",
-      }),
-      model: "gpt-4o-transcribe",
+      file: new File([bytes], audio.name || "recording.webm", { type: audio.type || "audio/webm" }),
+      model: "whisper-1",
     });
     const transcript = transcription.text.trim();
 
