@@ -36,6 +36,7 @@ export default function CreatePage() {
   const [copiedTab, setCopiedTab] = useState<Format | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [recordingId, setRecordingId] = useState<string | null>(null);
+  const [activeTemplates, setActiveTemplates] = useState<string[]>(["twitter", "linkedin", "summary"]);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -52,6 +53,9 @@ export default function CreatePage() {
           setComplexity(parsed.sliders[2] || 30);
           setBrevity(parsed.sliders[1] || 85);
           setTone(rigor > 60 ? "professional" : rigor < 40 ? "casual" : "bold");
+        }
+        if (parsed.templates) {
+          setActiveTemplates(parsed.templates);
         }
       }
     } catch (e) {}
@@ -171,11 +175,12 @@ export default function CreatePage() {
     return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
   }
 
-  const tabs: { key: Format; label: string; icon: typeof MessageCircle }[] = [
+  const allTabs: { key: Format; label: string; icon: typeof MessageCircle }[] = [
     { key: "twitter", label: "Thread", icon: MessageCircle },
     { key: "linkedin", label: "Post", icon: Briefcase },
     { key: "summary", label: "Summary", icon: FileText },
   ];
+  const tabs = allTabs.filter(t => activeTemplates.includes(t.key));
 
   const tones: { key: Tone; label: string }[] = [
     { key: "casual", label: "Casual" },
@@ -374,6 +379,12 @@ export default function CreatePage() {
 
             <div className="flex flex-1 flex-col gap-4 overflow-y-auto pr-2">
               {/* Output cards */}
+              {tabs.length === 0 && (
+                <div className="flex flex-col items-center justify-center p-8 text-center border border-dashed border-line bg-panel">
+                  <p className="text-sm text-text-sub">No output templates selected.</p>
+                  <p className="mt-1 font-mono text-[10px] text-white/30">Enable templates in the Control Center Settings.</p>
+                </div>
+              )}
               {tabs.map((tab) => (
                 <div key={tab.key} className="group relative border border-line bg-panel p-6 transition-all hover:border-line-active">
                   <CornerMarkers size={6} />
@@ -495,21 +506,31 @@ export default function CreatePage() {
               <span className="sys-label mb-4">04 / Output Aggregation</span>
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div className="flex flex-wrap gap-2">
-                  {["Twitter", "LinkedIn", "Summary", "Blog Outline", "Newsletter", "Action Items"].map((fmt, i) => (
-                    <button
-                      key={fmt}
-                      type="button"
-                      disabled={i >= 3}
-                      className={`flex items-center gap-2 px-4 py-2 font-mono text-[11px] uppercase transition-all ${
-                        i < 3
-                          ? "border border-primary bg-[rgba(240,85,30,0.05)] text-white"
-                          : "cursor-not-allowed border border-line text-text-sub opacity-40"
-                      }`}
-                    >
-                      {fmt}
-                      {i >= 3 && <span className="rounded-sm bg-white/10 px-1.5 py-0.5 text-[8px] normal-case tracking-normal text-white/30">PRO</span>}
-                    </button>
-                  ))}
+                  {[
+                    { label: "Twitter", key: "twitter", isPro: false },
+                    { label: "LinkedIn", key: "linkedin", isPro: false },
+                    { label: "Summary", key: "summary", isPro: false },
+                    { label: "Blog Outline", key: "blog", isPro: true },
+                    { label: "Newsletter", key: "newsletter", isPro: true },
+                    { label: "Action Items", key: "actionItems", isPro: true }
+                  ].map((fmt) => {
+                    const isActive = activeTemplates.includes(fmt.key) && !fmt.isPro;
+                    return (
+                      <button
+                        key={fmt.key}
+                        type="button"
+                        disabled={fmt.isPro || !isActive}
+                        className={`flex items-center gap-2 px-4 py-2 font-mono text-[11px] uppercase transition-all ${
+                          isActive
+                            ? "border border-primary bg-[rgba(240,85,30,0.05)] text-white"
+                            : "cursor-not-allowed border border-line text-text-sub opacity-40"
+                        }`}
+                      >
+                        {fmt.label}
+                        {fmt.isPro && <span className="rounded-sm bg-white/10 px-1.5 py-0.5 text-[8px] normal-case tracking-normal text-white/30">PRO</span>}
+                      </button>
+                    );
+                  })}
                 </div>
                 <button
                   type="button"

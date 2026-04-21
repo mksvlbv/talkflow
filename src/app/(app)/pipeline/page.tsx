@@ -1,10 +1,9 @@
-"use client";
-
 import Link from "next/link";
-
-import { toast } from "sonner";
+import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
 
 import { CornerMarkers } from "@/components/landing/corner-markers";
+import { PipelineExportButton } from "@/components/app/pipeline-export";
 
 const PIPELINE_CARDS = [
   {
@@ -21,7 +20,7 @@ const PIPELINE_CARDS = [
     title: "Semantic Sync",
     desc: "Natural language processing and core concept mapping.",
     status: "AWAITING_BUFFER",
-    active: false,
+    active: true,
   },
   {
     num: "03",
@@ -29,7 +28,7 @@ const PIPELINE_CARDS = [
     title: "Transformation",
     desc: "Multi-modal formatting and content restructuring.",
     status: "PENDING_QUEUE",
-    active: false,
+    active: true,
   },
   {
     num: "04",
@@ -37,7 +36,7 @@ const PIPELINE_CARDS = [
     title: "Calibration",
     desc: "Tone adjustment and manual output verification.",
     status: "USER_GATE",
-    active: false,
+    active: true,
   },
   {
     num: "05",
@@ -45,22 +44,45 @@ const PIPELINE_CARDS = [
     title: "Delivery",
     desc: "Final packet generation and destination routing.",
     status: "TARGET_NULL",
-    active: false,
+    active: true,
   },
 ];
 
-const SYSTEM_STATS = [
-  { label: "THROUGHPUT", value: "42.4 KB/S" },
-  { label: "LOAD_BALANCER", value: "NOMINAL" },
-];
+export default async function PipelinePage() {
+  const { userId } = await auth();
+  
+  let userRecordingsCount = 0;
+  let userDocsCount = 0;
+  let logs: string[] = [
+    `[${new Date().toISOString().slice(11, 19)}] INITIALIZING JOURNEY_MAP... DONE`,
+    `[${new Date().toISOString().slice(11, 19)}] RESOLVING STAGE_01 -> STAGE_05 CONNECTORS`,
+    `[${new Date().toISOString().slice(11, 19)}] VALIDATING PIPELINE INTEGRITY... 100%`,
+  ];
 
-const CONSTRUCTION_LOG = [
-  "[14:22:01] INITIALIZING JOURNEY_MAP... DONE",
-  "[14:22:02] RESOLVING STAGE_01 -> STAGE_05 CONNECTORS",
-  "[14:22:02] VALIDATING PIPELINE INTEGRITY... 100%",
-];
+  if (userId) {
+    const user = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+    if (user) {
+      userRecordingsCount = await prisma.recording.count({ where: { userId: user.id } });
+      userDocsCount = await prisma.document.count({ where: { userId: user.id } });
+      
+      const recentRecs = await prisma.recording.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        take: 3
+      });
 
-export default function PipelinePage() {
+      if (recentRecs.length > 0) {
+        logs = recentRecs.map((r, i) => `[${r.createdAt.toISOString().slice(11, 19)}] PROCESSED_RECORDING: ${r.title.toUpperCase()} -> ${r.charCount} BYTES`);
+        logs.unshift(`[${new Date().toISOString().slice(11, 19)}] FETCHED ${userRecordingsCount} TOTAL RECORDINGS FROM DB`);
+      }
+    }
+  }
+
+  const SYSTEM_STATS = [
+    { label: "THROUGHPUT", value: `${(userRecordingsCount * 42.4).toFixed(1)} KB/S` },
+    { label: "LOAD_BALANCER", value: "NOMINAL" },
+    { label: "DOCUMENTS_GENERATED", value: String(userDocsCount) },
+  ];
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Ambient effects (DNA) */}
@@ -158,7 +180,7 @@ export default function PipelinePage() {
               <CornerMarkers size={6} />
               <p className="mb-2 font-mono text-[0.6rem] text-text-sub">CONSTRUCTION_LOG</p>
               <div className="space-y-1 font-mono text-[0.55rem] text-white/30">
-                {CONSTRUCTION_LOG.map((line, i) => (
+                {logs.map((line, i) => (
                   <div key={i}>{line}</div>
                 ))}
               </div>
@@ -176,13 +198,7 @@ export default function PipelinePage() {
           >
             BACK TO DASHBOARD
           </Link>
-          <button
-            type="button"
-            onClick={() => toast("Schematic exported to clipboard")}
-            className="border border-line px-6 py-2 font-mono text-[0.7rem] text-text-sub transition-colors hover:border-line-active hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-          >
-            EXPORT SCHEMATIC
-          </button>
+          <PipelineExportButton />
           <Link
             href="/processing"
             className="border border-line px-6 py-2 font-mono text-[0.7rem] text-text-sub transition-colors hover:border-line-active hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
