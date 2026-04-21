@@ -9,11 +9,33 @@ import {
   Plus,
 } from "lucide-react";
 
+import { prisma } from "@/lib/prisma";
+import { getAppUserByClerkId } from "@/lib/app-user";
 import { UptimeCounter } from "@/components/app/uptime-counter";
 import { CornerMarkers } from "@/components/landing/corner-markers";
 
 export default async function DashboardPage() {
   const { userId } = await auth();
+  const appUser = userId ? await getAppUserByClerkId(userId) : null;
+
+  let recordings: any[] = [];
+  let totalRecordings = 0;
+  let generatedCount = 0;
+
+  if (appUser) {
+    [totalRecordings, generatedCount, recordings] = await Promise.all([
+      prisma.recording.count({ where: { userId: appUser.id } }),
+      prisma.document.count({ where: { userId: appUser.id } }),
+      prisma.recording.findMany({
+        where: { userId: appUser.id },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        include: { document: true },
+      }),
+    ]);
+  }
+
+  const latestRecording = recordings[0];
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
@@ -36,9 +58,9 @@ export default async function DashboardPage() {
         <div className="flex items-center gap-6">
           <div className="hidden items-center gap-10 sm:flex">
             {[
-              { label: "RECORDINGS", value: "3" },
-              { label: "GENERATED", value: "9" },
-              { label: "USAGE", value: "7:31" },
+              { label: "RECORDINGS", value: String(totalRecordings) },
+              { label: "GENERATED", value: String(generatedCount * 3) }, // 3 formats per doc
+              { label: "USAGE", value: "ACTV" },
             ].map((m) => (
               <div key={m.label} className="flex items-center gap-2">
                 <span className="font-mono text-[10px] text-white/30">{m.label}</span>
@@ -84,32 +106,50 @@ export default async function DashboardPage() {
               <div className="flex items-center justify-between border-b border-dashed border-line px-6 py-4">
                 <div className="flex items-center gap-3">
                   <p className="sys-label">01 / Latest Transcript</p>
-                  <span className="font-mono text-[8px] text-white/15">SAMPLE</span>
+                  <span className="font-mono text-[8px] text-white/15">
+                    {latestRecording ? "LIVE" : "EMPTY"}
+                  </span>
                 </div>
-                <span className="font-mono text-[10px] text-white/30">2:34 DURATION</span>
               </div>
               <div className="p-6">
-                <p className="mb-3 font-mono text-[10px] uppercase text-white/30">The Architecture of Predictability</p>
-                <p className="text-[15px] font-light leading-relaxed text-white/80">
-                  &ldquo;The intersection of systemic design and user behavior is where the most interesting insights live. When we think about{" "}
-                  <span className="border-b border-primary bg-[rgba(240,85,30,0.1)] px-1 text-primary">consistency</span>, we&apos;re not just talking about repeating the same actions — we&apos;re building{" "}
-                  <span className="border-b border-primary bg-[rgba(240,85,30,0.1)] px-1 text-primary">predictable systems</span>{" "}
-                  that compound over time.&rdquo;
-                </p>
-                <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
-                  <div className="flex gap-4 font-mono text-[10px] text-white/30">
-                    <span>Jun 12</span>
-                    <span>3 FORMATS</span>
-                    <span>CONF: 99.2%</span>
+                {latestRecording ? (
+                  <>
+                    <p className="mb-3 font-mono text-[10px] uppercase text-white/30">
+                      {latestRecording.title}
+                    </p>
+                    <p className="line-clamp-4 text-[15px] font-light leading-relaxed text-white/80">
+                      {latestRecording.transcript}
+                    </p>
+                    <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
+                      <div className="flex gap-4 font-mono text-[10px] text-white/30">
+                        <span>
+                          {new Intl.DateTimeFormat("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          }).format(latestRecording.createdAt)}
+                        </span>
+                        <span>{latestRecording.document ? "3 FORMATS" : "NO FORMATS"}</span>
+                      </div>
+                      <Link
+                        href={`/history/${latestRecording.id}`}
+                        className="flex items-center gap-1.5 font-mono text-[10px] text-primary transition-colors hover:brightness-110"
+                      >
+                        VIEW FULL
+                        <ArrowRight className="size-3" />
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <p className="text-sm font-light text-text-sub">No recordings yet.</p>
+                    <Link
+                      href="/create"
+                      className="mt-4 border border-primary px-4 py-1.5 font-mono text-[10px] text-primary transition-colors hover:bg-primary hover:text-black"
+                    >
+                      CREATE FIRST
+                    </Link>
                   </div>
-                  <Link
-                    href="/history/1"
-                    className="flex items-center gap-1.5 font-mono text-[10px] text-primary transition-colors hover:brightness-110"
-                  >
-                    VIEW FULL
-                    <ArrowRight className="size-3" />
-                  </Link>
-                </div>
+                )}
               </div>
             </div>
 
@@ -171,35 +211,42 @@ export default async function DashboardPage() {
             <CornerMarkers size={6} />
             <div className="flex items-center justify-between border-b border-dashed border-line px-6 py-4">
               <p className="sys-label">03 / Recent Activity</p>
-              <span className="font-mono text-[10px] text-white/30">3 DOCUMENTS</span>
+              <span className="font-mono text-[10px] text-white/30">{recordings.length} DOCUMENTS</span>
             </div>
             <div>
-              {[
-                { id: "1", title: "The Architecture of Predictability", time: "2:34", formats: 3, date: "Jun 12" },
-                { id: "2", title: "Building Systems Over Motivation", time: "1:45", formats: 3, date: "Jun 10" },
-                { id: "3", title: "Cognitive Load in Interface Design", time: "3:12", formats: 2, date: "Jun 8" },
-              ].map((doc, i) => (
-                <Link
-                  key={doc.id}
-                  href={`/history/${doc.id}`}
-                  className="group flex items-center justify-between border-b border-line px-6 py-4 transition-colors last:border-b-0 hover:bg-[rgba(255,255,255,0.02)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="font-mono text-[10px] text-white/20">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium">{doc.title}</p>
-                      <div className="mt-0.5 flex gap-3 font-mono text-[10px] text-white/30">
-                        <span>{doc.time}</span>
-                        <span>{doc.formats} FORMATS</span>
-                        <span>{doc.date}</span>
+              {recordings.length > 0 ? (
+                recordings.map((doc, i) => (
+                  <Link
+                    key={doc.id}
+                    href={`/history/${doc.id}`}
+                    className="group flex items-center justify-between border-b border-line px-6 py-4 transition-colors last:border-b-0 hover:bg-[rgba(255,255,255,0.02)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="font-mono text-[10px] text-white/20">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium">{doc.title}</p>
+                        <div className="mt-0.5 flex gap-3 font-mono text-[10px] text-white/30">
+                          <span>{doc.wordCount} WORDS</span>
+                          <span>{doc.document ? "3 FORMATS" : "PROCESSING"}</span>
+                          <span>
+                            {new Intl.DateTimeFormat("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            }).format(doc.createdAt)}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <ArrowRight className="size-3.5 text-text-sub transition-transform group-hover:translate-x-1 group-hover:text-primary" />
-                </Link>
-              ))}
+                    <ArrowRight className="size-3.5 text-text-sub transition-transform group-hover:translate-x-1 group-hover:text-primary" />
+                  </Link>
+                ))
+              ) : (
+                <div className="px-6 py-4">
+                  <p className="font-mono text-[10px] text-white/30">NO RECENT ACTIVITY</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
