@@ -2,7 +2,7 @@
 
 # TalkFlow
 
-**Voice-to-content engine that turns raw speech into publish-ready content.**
+**Voice-to-content SaaS that turns raw speech into publish-ready content.**
 
 Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in seconds.
 
@@ -21,6 +21,25 @@ Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in s
 ---
 
 ![TalkFlow Dashboard](public/og-dashboard.png)
+
+## Reviewer Quick Read
+
+1. Record speech or use preview mode to enter the product without creating an account.
+2. `/api/process` combines transcription and generation into one server-side content pipeline.
+3. Clerk handles auth, Stripe handles billing, and Prisma/Supabase handle persistence and storage.
+4. This repo proves AI-enabled SaaS productization more than orchestration depth or evaluation rigor.
+
+## What This Repo Proves
+
+- Auth, billing, storage, and AI feature delivery in one cohesive product flow
+- Multi-step media -> transcript -> content workflow with a usable public preview
+- Product-minded packaging around onboarding, pricing, and upgrade paths
+
+## Honest Scope Boundaries
+
+- Runtime AI calls use Groq through an OpenAI-compatible client and expect `GROQ_API_KEY`.
+- `promptfooconfig.yaml` is an exploratory artifact, not a full regression-grade eval harness.
+- Current automated tests focus on landing/demo UX and flow sanity, not deep backend reliability assertions.
 
 ## Features
 
@@ -42,7 +61,7 @@ Record your thoughts — get Twitter threads, LinkedIn posts, and summaries in s
 | Framework | Next.js 16 (Turbopack) |
 | UI | React 19, Tailwind CSS 4, Lucide Icons |
 | Auth | Clerk |
-| AI | Groq (Whisper + Llama 3.3) |
+| AI | Groq (OpenAI-compatible Whisper + Llama 3.3 APIs) |
 | Database | Prisma 7 + Supabase Postgres |
 | Storage | Supabase Storage |
 | Payments | Stripe |
